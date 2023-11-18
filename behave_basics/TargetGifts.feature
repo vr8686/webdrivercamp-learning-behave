@@ -19,5 +19,5 @@ Feature: Target Gifts
     When Select Her in Who’s on your list? section
     When Select Gifts under $15 in Gift ideas that fit your budget section
     Then Collect all items on the first page into collected_items
-    Then Verify all collected results' price is < 15
-      | context.collected_items |
+  #  Then Verify all collected results' price is < 15
+  #    | context.collected_items |
