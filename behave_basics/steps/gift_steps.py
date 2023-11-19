@@ -1,9 +1,15 @@
 from behave import *
 
 
+@step('Print the current url')
+def print_current_url(context):
+    print(context.browser.current_url)
+
+
 @step('Navigate to {url}')
 def navigate_to_url(context, url):
     context.browser.get(url)
+    print_current_url(context)
 
 
 @when("Search for {search_item}")
