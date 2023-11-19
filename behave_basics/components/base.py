@@ -13,6 +13,7 @@ class Base:
     ITEM_XPATH = '//div[@class="styles__StyledCol-sc-fw90uk-0 dOpyUp"]'
     ITEM_NAME_XPATH = '//a[@data-test="product-title"]'
     ITEM_PRICE_XPATH = '//span[@data-test="current-price"]'
+    ITEM_SHIPMENT_XPATH = ''
 
     def __init__(self, driver, wait):
         self.driver = driver
@@ -23,8 +24,9 @@ class Base:
 
     def find_element(self, xpath: str):
         element = self.wait.until(ec.visibility_of_element_located((By.XPATH, xpath)))
-        self.driver.execute_script("arguments[0].scrollIntoView();", element)
-        time.sleep(0.2)
+        if 'price' not in xpath and 'standardShippingMessage' not in xpath:
+            self.driver.execute_script("arguments[0].scrollIntoView();", element)
+        time.sleep(0.1)
         return element
 
     def search_for_item(self, search_item):

@@ -1,4 +1,8 @@
+import time
+
 from behave_basics.components.base import Base
+from selenium.common import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
 
@@ -27,25 +31,44 @@ class GiftsPage(Base):
         item_xpath = (By.XPATH, self.ITEM_XPATH)
         self.wait.until(ec.presence_of_element_located(item_xpath))
         element = self.driver.find_elements(*item_xpath)
+        time.sleep(0.5)
         return element
 
-    def get_item_name(self, number):
-        name_xpath = f'({self.ITEM_NAME_XPATH})[{number}]'
+    def get_item_name(self, ancestor: str) -> str:
+        name_xpath = f'{ancestor}//a[@data-test="product-title"]'
         element = self.find_element(name_xpath)
-        return element
+        return element.text
 
-    def get_item_price(self, number):
-        price_xpath = f'({self.ITEM_PRICE_XPATH})[{number}]'
+    def get_item_price(self, ancestor: str) -> str:
+        price_xpath = f'{ancestor}//span[@data-test="current-price"]'
         element = self.find_element(price_xpath)
-        return element
+        return element.text
+
+    def get_item_shipment(self, ancestor: str) -> str:
+        shipping_xpath = f'{ancestor}//span[@data-test="LPFulfillmentSectionShippingFA_standardShippingMessage"]/span'
+        try:
+            element = WebDriverWait(self.driver, 1).until(ec.presence_of_element_located((By.XPATH, shipping_xpath)))
+        except TimeoutException:
+            return None
+        else:
+            return element.text
 
     def collect_items_data(self):
         collected_data = {}
         items_list = []
         items_list.extend(item for item in self.get_item())
-        for i in range(1, len(items_list)+1):
-            item_data = {'name': self.get_item_name(i).text, 'price': self.get_item_price(i).text}
-            collected_data[i] = item_data
         print(len(items_list))
-        # print(collected_data)
+        for i in range(1, len(items_list)+1):
+            item_xpath = '//div[@class="styles__StyledCol-sc-fw90uk-0 dOpyUp"]'
+            item_data = {'name': self.get_item_name(f'{item_xpath}[{i}]'),
+                         'price': self.get_item_price(f'{item_xpath}[{i}]'),
+                         'shipping': self.get_item_shipment(f'{item_xpath}[{i}]')
+                         }
+            collected_data[i] = item_data
         return collected_data
+
+    def verify_price(self, price: str) -> bool:
+        if float(price) < 15:
+            return True
+        else:
+            return False

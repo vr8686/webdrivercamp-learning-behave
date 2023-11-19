@@ -23,9 +23,24 @@ def select_option_in_section(context, option, section):
     context.giftspage.select_option_in_section(section, option)
 
 
-@then("Collect all items on the first page into {context_var}")
-def step_impl(context, context_var):
+@then("Collect all items on the first page into {context_var} on the {level} level")
+def step_impl(context, context_var, level=None):
     items = context.giftspage.collect_items_data()
-    setattr(context, context_var, items)
-    for item in getattr(context, context_var).keys():
-        print(f"{getattr(context, context_var)[item]['name']} - {getattr(context, context_var)[item]['price']}")
+    if level:
+        setattr(context.feature, context_var, items)
+    else:
+        setattr(context, context_var, items)
+    for item, item_data in context.feature.collected_items.items():
+        print(f"{item_data['name']} - {item_data['price']}, {item_data['shipping']}")
+
+
+@step('Verify all collected results\' {param} is {condition}')
+def step_impl(context, param, condition):
+    for item, item_data in context.feature.collected_items.items():
+        if item_data['price']:
+            price = item_data['price']
+            price_cleaned = price[price.find('$') + 1:price.find(' ', price.find('$') + 1)]
+            print(f"OK. Price of {item_data['name'][:20]} is ${price_cleaned} and < 15"
+                  if context.giftspage.verify_price(price_cleaned)
+                  else f"MISMATCH. Price of {item_data['name'][:20]} is ${price_cleaned} and higher than 15")
+
