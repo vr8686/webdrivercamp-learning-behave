@@ -15,7 +15,7 @@ def search_for_item(context, search_item):
 def verify_header_contains(context, search_item):
     if search_item == 'iphone':
         context.giftspage.switch_to_iphone_page()
-    context.base.verify_element_contains(context.h1header, search_item)
+    context.base.verify_header_contains(search_item)
 
 
 @when("Select {option} in {section} section")
@@ -30,17 +30,15 @@ def step_impl(context, context_var, level=None):
         setattr(context.feature, context_var, items)
     else:
         setattr(context, context_var, items)
-    for item, item_data in context.feature.collected_items.items():
-        print(f"{item_data['name']} - {item_data['price']}, {item_data['shipping']}")
+    # for item, item_data in context.feature.collected_items.items():
+    #     print(f"{item_data['name']} - {item_data['price']}, {item_data['shipping']}")
 
 
 @step('Verify all collected results\' {param} is {condition}')
 def step_impl(context, param, condition):
-    for item, item_data in context.feature.collected_items.items():
-        if item_data['price']:
-            price = item_data['price']
-            price_cleaned = price[price.find('$') + 1:price.find(' ', price.find('$') + 1)]
-            print(f"OK. Price of {item_data['name'][:20]} is ${price_cleaned} and < 15"
-                  if context.giftspage.verify_price(price_cleaned)
-                  else f"MISMATCH. Price of {item_data['name'][:20]} is ${price_cleaned} and higher than 15")
-
+    parameters = {"price": context.giftspage.verify_price,
+                  "shipping": context.giftspage.verify_shipping}
+    if param in parameters:
+        parameters[param](context.feature.collected_items, condition)
+    else:
+        print(f'Wrong \'param\' - {param}')

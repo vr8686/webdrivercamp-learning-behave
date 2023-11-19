@@ -10,7 +10,6 @@ def before_all(context):
     context.wait = WebDriverWait(context.browser, 10)
     context.base = Base(context.browser, context.wait)
     context.giftspage = GiftsPage(context.base.driver, context.base.wait)
-    context.h1header = context.base.H1HEADER
 
 
 def after_all(context):

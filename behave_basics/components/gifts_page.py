@@ -18,7 +18,6 @@ class GiftsPage(Base):
         element = self.find_element(section_title)
         if element:
             self.click(option_locator)
-            self.wait.until(ec.visibility_of_element_located((By.XPATH, self.PRODUCTLIST)))
 
     def switch_to_iphone_page(self):
         explore_all_xpath = "//p[contains(., 'Explore all')]"
@@ -28,10 +27,10 @@ class GiftsPage(Base):
         self.driver.switch_to.default_content()
 
     def get_item(self):
-        item_xpath = (By.XPATH, self.ITEM_XPATH)
+        time.sleep(1)
+        item_xpath = (By.XPATH, '//div[@class="styles__StyledCol-sc-fw90uk-0 dOpyUp"]')
         self.wait.until(ec.presence_of_element_located(item_xpath))
         element = self.driver.find_elements(*item_xpath)
-        time.sleep(0.5)
         return element
 
     def get_item_name(self, ancestor: str) -> str:
@@ -57,7 +56,6 @@ class GiftsPage(Base):
         collected_data = {}
         items_list = []
         items_list.extend(item for item in self.get_item())
-        print(len(items_list))
         for i in range(1, len(items_list)+1):
             item_xpath = '//div[@class="styles__StyledCol-sc-fw90uk-0 dOpyUp"]'
             item_data = {'name': self.get_item_name(f'{item_xpath}[{i}]'),
@@ -65,10 +63,29 @@ class GiftsPage(Base):
                          'shipping': self.get_item_shipment(f'{item_xpath}[{i}]')
                          }
             collected_data[i] = item_data
+        print(f"Collected data for {len(collected_data)} items")
         return collected_data
 
-    def verify_price(self, price: str) -> bool:
-        if float(price) < 15:
-            return True
-        else:
-            return False
+    def verify_price(self, collected_data: dict, condition: str):
+        operators = {
+            ">": lambda x, y: x > y,
+            "<": lambda x, y: x < y,
+            "=": lambda x, y: x == y,
+            "!=": lambda x, y: x != y
+        }
+        operator, value = condition.split()
+        for item, item_data in collected_data.items():
+            if item_data['price']:
+                price = item_data['price'][item_data['price'].find('$') + 1:item_data['price'].find(' ', item_data['price'].find('$') + 1)]
+                if operator in operators:
+                    if not operators[operator](float(price), int(value)):
+                        print(f'Price for {item}. {item_data['name']} - ${price} does not meet the condition.')
+                else:
+                    print("Operator has not been properly defined")
+        print('Prices of all the items meet expected condition')
+
+    def verify_shipping(self, collected_data: dict, condition: str):
+        for item, item_data in collected_data.items():
+            if item_data['shipping'] is None or "Free" not in item_data['shipping'].lower:
+                print(f"Shipping condition of item: {item_data['name']} does not meet expected condition - {condition}")
+        print(f'Shipping conditions of all the items meet expected condition - {condition}')

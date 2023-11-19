@@ -6,15 +6,6 @@ from selenium.webdriver.common.keys import Keys
 
 
 class Base:
-    SEARCHBAR = ('//div[@class="styles__SearchWrapper-sc-1ywf0d0-0 bpBcjs"]'
-                 '//input[contains(@placeholder, "What can we help you find?")]')
-    H1HEADER = '//h1[@data-test="page-title"]'
-    PRODUCTLIST = '//div[@class="styles__ProductListGridFadedLoading-sc-u8zdb1-0"]'
-    ITEM_XPATH = '//div[@class="styles__StyledCol-sc-fw90uk-0 dOpyUp"]'
-    ITEM_NAME_XPATH = '//a[@data-test="product-title"]'
-    ITEM_PRICE_XPATH = '//span[@data-test="current-price"]'
-    ITEM_SHIPMENT_XPATH = ''
-
     def __init__(self, driver, wait):
         self.driver = driver
         self.wait = wait
@@ -30,17 +21,19 @@ class Base:
         return element
 
     def search_for_item(self, search_item):
-        locator = self.find_element(self.SEARCHBAR)
+        searchbar = ('//div[@class="styles__SearchWrapper-sc-1ywf0d0-0 bpBcjs"]'
+                     '//input[contains(@placeholder, "What can we help you find?")]')
+        locator = self.find_element(searchbar)
         locator.send_keys(search_item)
         locator.send_keys(Keys.RETURN)
-        self.wait.until(ec.visibility_of_element_located((By.XPATH, self.PRODUCTLIST)))
 
     def get_text(self, xpath: str):
         text = self.wait.until(ec.visibility_of_element_located((By.XPATH, xpath))).text
         return text
 
-    def verify_element_contains(self, element: str, keyword: str):
-        element_text = self.get_text(element)
+    def verify_header_contains(self, keyword: str):
+        header = '//h1[@data-test="page-title"]'
+        element_text = self.get_text(header)
         print(f'Checking if {element_text} contains word \"{keyword}\"...')
         if keyword in element_text.lower():
             print(f'Success. The element contains \"{keyword}\".')
