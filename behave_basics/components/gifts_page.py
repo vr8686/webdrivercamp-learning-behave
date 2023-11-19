@@ -64,34 +64,3 @@ class GiftsPage(Base):
                          }
             collected_data[i] = item_data
         return collected_data
-
-    def verify_price(self, collected_data: dict, condition: str):
-        operators = {
-            ">": lambda x, y: x > y,
-            "<": lambda x, y: x < y,
-            "=": lambda x, y: x == y,
-            "!=": lambda x, y: x != y
-        }
-        operator, value = condition.split()
-        for item, item_data in collected_data.items():
-            if item_data['price']:
-                price = item_data['price'][item_data['price'].find('$') + 1:item_data['price'].find(' ', item_data['price'].find('$') + 1)]
-                if operator in operators:
-                    if not operators[operator](float(price), int(value)):
-                        print(f'Price for {item}. {item_data['name']} - ${price} does not meet the condition.')
-                else:
-                    print("Operator has not been properly defined")
-        print('Prices of all the items meet expected condition')
-
-    def verify_shipping(self, collected_data: dict, condition: str):
-        mismatches = []
-        for item, item_data in collected_data.items():
-            shipment_data = item_data.get('shipment')
-            if shipment_data is None or condition not in shipment_data:
-                mismatches.append((item_data['name'], item_data['shipment']))
-        if not mismatches:
-            print(f'Shipping conditions of all the items meet expected condition - {condition}')
-        else:
-            print(f"Items that do not meet expected shipment condition - {condition}:")
-            for item in mismatches:
-                print(f"Item: {item[0]}, Shipment: {item[1]}")

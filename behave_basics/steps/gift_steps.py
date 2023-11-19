@@ -35,8 +35,8 @@ def step_impl(context, var, level=None):
 
 @step('Verify all collected results\' {param} is {condition}')
 def step_impl(context, param, condition):
-    parameters = {"price": context.giftspage.verify_price,
-                  "shipment": context.giftspage.verify_shipping}
+    parameters = {"price": context.verification.verify_price,
+                  "shipment": context.verification.verify_shipping}
     if param in parameters:
         parameters[param](context.feature.collected_items, condition)
     else:
