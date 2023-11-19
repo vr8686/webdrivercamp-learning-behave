@@ -44,9 +44,9 @@ class GiftsPage(Base):
         return element.text
 
     def get_item_shipment(self, ancestor: str) -> str:
-        shipping_xpath = f'{ancestor}//span[@data-test="LPFulfillmentSectionShippingFA_standardShippingMessage"]/span'
+        shipment_xpath = f'{ancestor}//span[@data-test="LPFulfillmentSectionShippingFA_standardShippingMessage"]/span'
         try:
-            element = WebDriverWait(self.driver, 1).until(ec.presence_of_element_located((By.XPATH, shipping_xpath)))
+            element = WebDriverWait(self.driver, 1).until(ec.presence_of_element_located((By.XPATH, shipment_xpath)))
         except TimeoutException:
             return None
         else:
@@ -60,10 +60,9 @@ class GiftsPage(Base):
             item_xpath = '//div[@class="styles__StyledCol-sc-fw90uk-0 dOpyUp"]'
             item_data = {'name': self.get_item_name(f'{item_xpath}[{i}]'),
                          'price': self.get_item_price(f'{item_xpath}[{i}]'),
-                         'shipping': self.get_item_shipment(f'{item_xpath}[{i}]')
+                         'shipment': self.get_item_shipment(f'{item_xpath}[{i}]')
                          }
             collected_data[i] = item_data
-        print(f"Collected data for {len(collected_data)} items")
         return collected_data
 
     def verify_price(self, collected_data: dict, condition: str):
@@ -85,7 +84,14 @@ class GiftsPage(Base):
         print('Prices of all the items meet expected condition')
 
     def verify_shipping(self, collected_data: dict, condition: str):
+        mismatches = []
         for item, item_data in collected_data.items():
-            if item_data['shipping'] is None or "Free" not in item_data['shipping'].lower:
-                print(f"Shipping condition of item: {item_data['name']} does not meet expected condition - {condition}")
-        print(f'Shipping conditions of all the items meet expected condition - {condition}')
+            shipment_data = item_data.get('shipment')
+            if shipment_data is None or condition not in shipment_data:
+                mismatches.append((item_data['name'], item_data['shipment']))
+        if not mismatches:
+            print(f'Shipping conditions of all the items meet expected condition - {condition}')
+        else:
+            print(f"Items that do not meet expected shipment condition - {condition}:")
+            for item in mismatches:
+                print(f"Item: {item[0]}, Shipment: {item[1]}")

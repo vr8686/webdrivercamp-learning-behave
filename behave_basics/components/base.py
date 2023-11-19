@@ -34,8 +34,7 @@ class Base:
     def verify_header_contains(self, keyword: str):
         header = '//h1[@data-test="page-title"]'
         element_text = self.get_text(header)
-        print(f'Checking if {element_text} contains word \"{keyword}\"...')
         if keyword in element_text.lower():
-            print(f'Success. The element contains \"{keyword}\".')
+            print(f'Success. The header contains \"{keyword}\".')
         else:
-            print(f'Mismatch. The element DOES NOT contain \"{keyword}\"')
+            print(f'Mismatch. The header DOES NOT contain \"{keyword}\"')

@@ -23,21 +23,20 @@ def select_option_in_section(context, option, section):
     context.giftspage.select_option_in_section(section, option)
 
 
-@then("Collect all items on the first page into {context_var} on the {level} level")
-def step_impl(context, context_var, level=None):
+@then("Collect all items on the first page into {var} on the {level} level")
+def step_impl(context, var, level=None):
     items = context.giftspage.collect_items_data()
-    if level:
-        setattr(context.feature, context_var, items)
+    if level is not None:
+        setattr(context.feature, var, items)
     else:
-        setattr(context, context_var, items)
+        setattr(context, var, items)
     # for item, item_data in context.feature.collected_items.items():
-    #     print(f"{item_data['name']} - {item_data['price']}, {item_data['shipping']}")
-
+    #     print(f"{item_data['name']} - {item_data['price']}, {item_data['shipment']}")
 
 @step('Verify all collected results\' {param} is {condition}')
 def step_impl(context, param, condition):
     parameters = {"price": context.giftspage.verify_price,
-                  "shipping": context.giftspage.verify_shipping}
+                  "shipment": context.giftspage.verify_shipping}
     if param in parameters:
         parameters[param](context.feature.collected_items, condition)
     else:

@@ -4,7 +4,7 @@ from behave_basics.components.base import Base
 from behave_basics.components.gifts_page import GiftsPage
 
 
-def before_all(context):
+def before_feature(context, feature):
     context.browser = webdriver.Chrome()
     context.browser.maximize_window()
     context.wait = WebDriverWait(context.browser, 10)
@@ -12,5 +12,9 @@ def before_all(context):
     context.giftspage = GiftsPage(context.base.driver, context.base.wait)
 
 
-def after_all(context):
+def after_feature(context, feature):
     context.browser.quit()
+
+def before_scenario(context, scenario):
+    if '@no_background' in scenario.effective_tags:
+        scenario.feature.background = None

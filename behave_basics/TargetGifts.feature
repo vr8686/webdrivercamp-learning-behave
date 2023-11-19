@@ -1,4 +1,4 @@
-Feature: Target Gifts
+  Feature: Target Gifts
 
   Background: User opens main page
     Given Navigate to https://www.target.com/
@@ -22,6 +22,7 @@ Feature: Target Gifts
     Then Verify all collected results' price is < 15
       | context.feature.collected_items |
 
-#    Scenario: Gifts - Shipment validation
-#    Then Verify all collected results' shipment is Free shipping
-#      | context.feature.collected_items |
+  @no_background
+  Scenario: Gift - Shipment validation
+    Then Verify all collected results' shipment is Free shipping
+      | context.feature.collected_items |
