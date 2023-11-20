@@ -38,13 +38,13 @@
     Examples: Her
       | option_1 | option_2         | condition |
       | Her      | Gifts under $15  | < 15      |
-      | Her      | Gifts under $25  | < 25      |
-      | Her      | Gifts under $50  | < 50      |
-      | Her      | Gifts under $100 | < 100     |
-
-    Examples: Him
-      | option_1 | option_2         | condition |
-      | Him      | Gifts under $15  | < 15      |
-      | Him      | Gifts under $25  | < 25      |
-      | Him      | Gifts under $50  | < 50      |
-      | Him      | Gifts under $100 | < 100     |
+#      | Her      | Gifts under $25  | < 25      |
+#      | Her      | Gifts under $50  | < 50      |
+#      | Her      | Gifts under $100 | < 100     |
+#
+#    Examples: Him
+#      | option_1 | option_2         | condition |
+#      | Him      | Gifts under $15  | < 15      |
+#      | Him      | Gifts under $25  | < 25      |
+#      | Him      | Gifts under $50  | < 50      |
+#      | Him      | Gifts under $100 | < 100     |

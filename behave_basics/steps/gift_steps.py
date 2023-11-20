@@ -39,7 +39,6 @@ def select_option_in_section(context, option, section):
 def step_impl(context, var, level=None):
     items = context.giftspage.collect_items_data()
     context_levels = {
-        "scenario": context,
         "feature": context.feature,
         None: context
     }
