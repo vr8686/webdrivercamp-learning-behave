@@ -1,21 +1,25 @@
 def verify_price(collected_data: dict, condition: str):
+    mismatches = []
     operators = {
         ">": lambda x, y: x > y,
-        "<": lambda x, y: x < y,
-        "=": lambda x, y: x == y,
-        "!=": lambda x, y: x != y
+        "<": lambda x, y: x < y
     }
     operator, value = condition.split()
     for item, item_data in collected_data.items():
-        if item_data['price']:
-            price = item_data['price'][
-                    item_data['price'].find('$') + 1:item_data['price'].find(' ', item_data['price'].find('$') + 1)]
+        if item_data['price'] and '$' in item_data['price']:
+            price = item_data['price'][item_data['price'].find('$') + 1:item_data['price'].find(' ', item_data['price'].find('$') + 1)]
             if operator in operators:
                 if not operators[operator](float(price), int(value)):
-                    print(f'Price for {item}. {item_data['name']} - ${price} does not meet the condition.')
+                    mismatches.append((item_data['name'], item_data['price']))
             else:
                 print("Operator has not been properly defined")
-    print('Prices of all the items meet expected condition')
+        else:
+            print(f'Price for {item}. {item_data['name']} - cannot be seen.')
+    if not mismatches:
+        print('Prices of all the items meet expected condition')
+    else:
+        for item in mismatches:
+            print(f'Price for {item[0]} - ${item[1]} does not meet the condition - {condition}.')
 
 
 def verify_shipping(collected_data: dict, condition: str):

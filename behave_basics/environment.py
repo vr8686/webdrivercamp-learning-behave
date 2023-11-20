@@ -20,4 +20,6 @@ def after_feature(context, feature):
 
 def before_scenario(context, scenario):
     if '@no_background' in scenario.effective_tags:
-        scenario.feature.background = None
+        context.no_background = True
+    else:
+        context.no_background = False

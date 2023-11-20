@@ -17,15 +17,17 @@ class Base:
         element = self.wait.until(ec.visibility_of_element_located((By.XPATH, xpath)))
         if 'price' not in xpath and 'standardShippingMessage' not in xpath:
             self.driver.execute_script("arguments[0].scrollIntoView();", element)
-        time.sleep(0.1)
+        time.sleep(0.5)  # extra time to look like a human
         return element
 
     def search_for_item(self, search_item):
-        searchbar = ('//div[@class="styles__SearchWrapper-sc-1ywf0d0-0 bpBcjs"]'
+        search_bar_xpath = ('//div[@class="styles__SearchWrapper-sc-1ywf0d0-0 bpBcjs"]'
                      '//input[contains(@placeholder, "What can we help you find?")]')
-        locator = self.find_element(searchbar)
+        product_list_xpath = '//div[contains(@class, "ProductListGrid")]'
+        locator = self.find_element(search_bar_xpath)
         locator.send_keys(search_item)
         locator.send_keys(Keys.RETURN)
+        self.wait.until(ec.presence_of_element_located((By.XPATH, product_list_xpath)))
 
     def get_text(self, xpath: str):
         text = self.wait.until(ec.visibility_of_element_located((By.XPATH, xpath))).text

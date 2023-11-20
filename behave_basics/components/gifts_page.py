@@ -1,7 +1,7 @@
 import time
 
 from behave_basics.components.base import Base
-from selenium.common import TimeoutException
+from selenium.common import TimeoutException, NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
@@ -17,6 +17,7 @@ class GiftsPage(Base):
                         //span[contains(text(), "{option}")]"""
         element = self.find_element(section_title)
         if element:
+            time.sleep(1)  # extra time to look like a human
             self.click(option_locator)
 
     def switch_to_iphone_page(self):
@@ -58,9 +59,14 @@ class GiftsPage(Base):
         items_list.extend(item for item in self.get_item())
         for i in range(1, len(items_list)+1):
             item_xpath = '//div[@class="styles__StyledCol-sc-fw90uk-0 dOpyUp"]'
-            item_data = {'name': self.get_item_name(f'{item_xpath}[{i}]'),
-                         'price': self.get_item_price(f'{item_xpath}[{i}]'),
-                         'shipment': self.get_item_shipment(f'{item_xpath}[{i}]')
-                         }
-            collected_data[i] = item_data
+            try:
+                item_data = {
+                    'name': self.get_item_name(f'{item_xpath}[{i}]'),
+                    'price': self.get_item_price(f'{item_xpath}[{i}]'),
+                    'shipment': self.get_item_shipment(f'{item_xpath}[{i}]')
+                }
+                collected_data[i] = item_data
+            except NoSuchElementException as e:
+                print(f'Error at XPath {item_xpath}[{i}]: {e}')
+                continue
         return collected_data
