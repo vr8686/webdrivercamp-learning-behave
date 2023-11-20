@@ -19,7 +19,7 @@ def verify_price(collected_data: dict, condition: str):
         print('Prices of all the items meet expected condition')
     else:
         for item in mismatches:
-            print(f'Price for {item[0]} - ${item[1]} does not meet the condition - {condition}.')
+            print(f'Price for {item[0]} - {item[1]} does not meet the condition - {condition}.')
 
 
 def verify_shipping(collected_data: dict, condition: str):
