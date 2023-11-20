@@ -31,7 +31,7 @@
     When Search for gifts
     When Select <option_1> in on your list? section
     Then Select <option_2> in Gift ideas that fit your budget section
-    Then Collect all items on the first page into collected_items on the scenario level
+    Then Collect all items on the first page into collected_items
     Then Verify all collected results' price is <condition>
       | context.collected_items |
 

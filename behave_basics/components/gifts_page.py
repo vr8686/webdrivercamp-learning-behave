@@ -1,7 +1,7 @@
 import time
 
 from behave_basics.components.base import Base
-from selenium.common import TimeoutException, NoSuchElementException
+from selenium.common import TimeoutException, NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
@@ -16,6 +16,7 @@ class GiftsPage(Base):
         option_locator = f"""{section_title}/ancestor::div[@class="styles__PictureNavigationWrapper-sc-7wjlys-0 jyKTUS"]
                         //span[contains(text(), "{option}")]"""
         element = self.find_element(section_title)
+        self.driver.execute_script("arguments[0].scrollIntoView();", element)
         if element:
             time.sleep(1)  # extra time to look like a human
             self.click(option_locator)
@@ -60,13 +61,21 @@ class GiftsPage(Base):
         for i in range(1, len(items_list)+1):
             item_xpath = '//div[@class="styles__StyledCol-sc-fw90uk-0 dOpyUp"]'
             try:
+                element = self.find_element(f'{item_xpath}[{i}]')
+                self.driver.execute_script("arguments[0].scrollIntoView();", element)
+                time.sleep(0.5)
                 item_data = {
                     'name': self.get_item_name(f'{item_xpath}[{i}]'),
                     'price': self.get_item_price(f'{item_xpath}[{i}]'),
                     'shipment': self.get_item_shipment(f'{item_xpath}[{i}]')
                 }
                 collected_data[i] = item_data
-            except NoSuchElementException as e:
-                print(f'Error at XPath {item_xpath}[{i}]: {e}')
+            except NoSuchElementException:
+                print(f'Error at XPath {item_xpath}[{i}] - no such element')
                 continue
+            except TimeoutException:
+                print(f'Error at XPath {item_xpath}[{i}] - TimeoutException')
+                continue
+            except StaleElementReferenceException:
+                print(f'Error at XPath {item_xpath}[{i}] - stale element not found')
         return collected_data

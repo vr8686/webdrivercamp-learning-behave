@@ -15,9 +15,7 @@ class Base:
 
     def find_element(self, xpath: str):
         element = self.wait.until(ec.visibility_of_element_located((By.XPATH, xpath)))
-        if 'price' not in xpath and 'standardShippingMessage' not in xpath:
-            self.driver.execute_script("arguments[0].scrollIntoView();", element)
-        time.sleep(0.5)  # extra time to look like a human
+        time.sleep(0.2)
         return element
 
     def search_for_item(self, search_item):

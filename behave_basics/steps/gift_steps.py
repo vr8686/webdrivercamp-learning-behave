@@ -34,7 +34,7 @@ def select_option_in_section(context, option, section):
 #     items = context.giftspage.collect_items_data()
 #     setattr(context, var, items)
 
-
+@step("Collect all items on the first page into {var}")
 @step("Collect all items on the first page into {var} on the {level} level")
 def step_impl(context, var, level=None):
     items = context.giftspage.collect_items_data()
