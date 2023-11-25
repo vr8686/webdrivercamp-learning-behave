@@ -18,6 +18,11 @@ class Base:
         time.sleep(0.2)
         return element
 
+    def find_present_element(self, xpath: str):
+        element = self.wait.until(ec.presence_of_element_located((By.XPATH, xpath)))
+        time.sleep(0.2)
+        return element
+
     def search_for_item(self, search_item):
         search_bar_xpath = ('//div[@class="styles__SearchWrapper-sc-1ywf0d0-0 bpBcjs"]'
                      '//input[contains(@placeholder, "What can we help you find?")]')
@@ -28,13 +33,12 @@ class Base:
         self.wait.until(ec.presence_of_element_located((By.XPATH, product_list_xpath)))
 
     def get_text(self, xpath: str):
-        text = self.wait.until(ec.visibility_of_element_located((By.XPATH, xpath))).text
-        return text
+        return self.wait.until(ec.visibility_of_element_located((By.XPATH, xpath))).text
 
     def verify_header_contains(self, keyword: str):
         header = '//h1[@data-test="page-title"]'
         element_text = self.get_text(header)
         if keyword in element_text.lower():
-            print(f'Success. The header contains \"{keyword}\".')
+            print(f'Success. The header contains "{keyword}".')
         else:
-            print(f'Mismatch. The header DOES NOT contain \"{keyword}\"')
+            print(f'Mismatch. The header DOES NOT contain "{keyword}"')
